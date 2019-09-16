@@ -1,14 +1,18 @@
 import numpy as np
+from Bio.SubsMat import MatrixInfo
+
+blosum = MatrixInfo.blosum62
+# which is a dictionary in the format:
+# ('W', 'F'): -1
+# i.e. when aligning the amino acids W and F, the score is -1
 
 
 class Aligner:
 
-    def __init__(self, seq1, seq2, gapPenalty, missPenalty, matchScore):
+    def __init__(self, seq1, seq2, gapPenalty):
         self.seq1 = seq1
         self.seq2 = seq2
         self.gapPenalty = gapPenalty
-        self.missPenalty = missPenalty
-        self.matchScore = matchScore
         self.alignMatrix = np.zeros(
             (len(self.seq1)+1, len(self.seq2)+1), dtype=int)
         self.traceBackMatrix = np.zeros(
@@ -22,19 +26,25 @@ class Aligner:
         self.identity = 0
 
     # get the best possible value according to the recursion formula given
+    # this is the only method that has been modified when compared to e2-1a.py
     def getValue(self, i, j):
-        if self.seq1[i-1] == self.seq2[j-1]:
-            missOrMatch = self.matchScore
-        else:
-            missOrMatch = self.missPenalty
-
+        
+        # the try except is because we have things like
+        # (M, L), but we don't have (L, M), so we need 
+        # to try both possibilities
+        try:
+            blosumVal = blosum[(self.seq1[i-1], self.seq2[j-1])]
+        except:
+            blosumVal = blosum[(self.seq2[j-1], self.seq1[i-1])]
+        
         possibleValues = [
-            self.alignMatrix[i-1][j-1] + missOrMatch,
+            self.alignMatrix[i-1][j-1] + blosumVal,
             self.alignMatrix[i][j-1] + self.gapPenalty,
             self.alignMatrix[i-1][j] + self.gapPenalty
         ]
 
         return max(possibleValues), possibleValues.index(max(possibleValues))
+
 
     # align the sequences building the matrixes
     def align(self):
@@ -68,6 +78,7 @@ class Aligner:
         self.finalScore = self.alignMatrix[len(self.seq1)][len(self.seq2)]
         self.makeAlignment()
 
+    
     # make the textual alignment
     def makeAlignment(self):
 
@@ -103,6 +114,7 @@ class Aligner:
 
         self.getIdentity()
 
+
     # get the number of matches/total number (identity)
     def getIdentity(self):
 
@@ -123,6 +135,7 @@ class Aligner:
         print('Identity:', self.identity)
 
 
+
 # open the human sequence
 file1 = open("hemoglobins/human.txt", "r")
 human = file1.read()
@@ -141,18 +154,14 @@ for animal in animalList:
     animals[animal] = animalSequence
 
 
-# default values given by the exercise
 gap = -4
-match = 5
-missmatch = -3
 
 scores = {}
-
 
 # compare all animal sequences against the human one
 for animal in animalList:
 
-    aligner = Aligner(human, animals[animal], gap, missmatch, match)
+    aligner = Aligner(human, animals[animal], gap)
     aligner.align()
     scores["human vs "+animal] = (aligner.finalScore, aligner.identity)
 
@@ -192,3 +201,7 @@ else:
 
     for d in draws:
         print(d, "- (score, identity):", scores[d])
+
+
+
+
