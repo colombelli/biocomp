@@ -1,0 +1,21 @@
+// Mesma coisa que o anterior, porém mudando o método pegaValor(i, j)
+// que agora leva em consideração a matriz blossum62
+
+blosum = abre o dicionário correspondente a matriz Blosum62 na lib Bio
+
+pegaValor(i, j):
+
+    tenta:
+        valorBlosum = blosum[seq1[i], seq2[j]]
+    caso não tenha, inverte:
+        valorBlosum = blosum[seq2[j], seq1[i]]
+    
+    // Ou seja: caso não tenha, por exemplo, (L, M), tenta (M, L)
+
+    valoresPossíveis = [
+        matrizAlinhamento[i-1][j-1] + valorBlosum,
+        matrizAlinhamento[i][j-1] + penalidadeGap,
+        matrizAlinhamento[i-1][j] + penalidadeGap
+    ]
+
+    retorna (max(valoresPossíveis), Operação correspondente ao max)

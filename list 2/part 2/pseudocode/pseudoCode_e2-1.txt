@@ -1,0 +1,110 @@
+// Primeiro definimos a classe responsável pelas operações de alinhamento
+
+Classe: Alinhador
+Recebe os parâmetros:
+    seq1 - sequência 1
+    seq2 - sequencia 2
+    penalidadeGap
+    penalidadeMiss
+    scoreDeMatch
+
+Construtor:
+    Todos os parâmetros viram atributo do objeto, além dos atributos
+    * scoreFinal   // que começa com 0
+    * identidade    // que começa com 0
+    * matrizAlinhamento     // matriz de zeros com (n x m) = (len(seq1)+1, len(seq2)+1)
+    * matrizDeTraceBack     // matriz de zeros com (n x m) = (len(seq1)+1, len(seq2)+1)
+    // a matriz de trace back será preenchida com caracteres indicando como foi construída
+    // a matriz de alinhamento. Onde d: diagonal; l: esquerda; u: cima; f: posição (0,0)
+    * string1   // Resultado de alinhamento da seq1
+    * string2   // Resultado de alinhamento da seq2
+
+Métodos:
+
+    pegaValor(i, j)     // recebe uma posição i,j na matrix e compara a posição i-1,j-1
+                        // das sequências, retornando o máximo valor de acordo com a fórmula dada
+                        // além da operação escolhida (match/missmatch, gap na seq1, gap na seq2, 0)
+    
+
+    alinha():
+        Preenche a coluna 0 da matrizDeTraceBack com 'u'
+        Preenche a linha 0 da matrizDeTraceBack com 'l'
+        Assina a posição (0, 0) da matrizDeTraceBack com 'f'
+
+        Preenche a coluna 0 da matrizAlinhamento com 0
+        Preenche a linha 0 da matrizAlinhamento com 0
+
+        Para i, j da matrizAlinhamento:
+            Se i ou j forem iguais a 0:
+                Pula iteração   // pois já foram preenchidos
+            
+            matrizAlinhamento[i][j], operação = pegaValor(i, j)
+            matrizDeTraceBack[i][j] = operação
+
+        scoreFinal = valor máximo da matrizAlinhamento
+        maxIndices = pega valor dos índices onde a célula é == scoreFinal
+        fatiaMatriz()
+
+
+    fatiaMatriz():
+
+        para cada (x,y) em maxIndices:
+            matrizFatiada = matrizAlinhamento[0 a x][0 a y]
+            fazAlinhamento()
+
+
+
+    fazAlinhamento():
+        string1 = ''
+        string2 = ''
+
+        OperaçãoAtual = matrizDeTraceBack[último i da matrizFatiada][último j da matrizFatiada]
+        i,j = últimos i,j da matrizFatiada
+
+        Enquanto OperaçãoAtual != 'f':
+
+            Se OperaçãoAtual for 'd' (diagonal):
+                string1 recebe o caractere i da seq1    // ou seja, alinha
+                string2 recebe o caractere j da seq2    // ou seja, alinha
+                i = i-1
+                j = j-1
+            
+            Se OperaçãoAtual for 'l' (esquerda):
+                string1 recebe -    // ou seja, recebe um gap
+                string2 recebe o caractere j da seq2    // ou seja, alinha
+                j = j-1
+            
+            Se OperaçãoAtual for 'u' (cima):
+                string1 recebe o caractere i da seq1    // ou seja, alinha
+                string2 recebe -    // ou seja, recebe um gap
+                i = i-1
+
+        calculaIdentidade()
+        printaResultados()
+    
+    calculaIdentidade():
+        Conta o número n da maior string final entre as duas alinhadas
+        identidade =    número de caracteres  iguais nas mesmas posições das
+                        das strings 1 e 2 alinhadas, dividido por n
+
+
+
+// Com a classe definida, podemos prosseguir com os alinhamentos
+
+gap = -2
+match = 1
+missmatch = -1
+
+Abre sequencia humana
+Abre sequencia biomphalaria
+
+Cria objeto passando os parâmetros
+objeto.alinha()
+
+
+
+
+
+
+
+
