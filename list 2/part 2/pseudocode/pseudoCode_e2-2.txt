@@ -1,21 +1,28 @@
-// Mesma coisa que o anterior, porém mudando o método pegaValor(i, j)
-// que agora leva em consideração a matriz blossum62
+Classe: Alinhador
+Recebe os parâmetros:
+    seq1 - sequência 1
+    seq2 - sequencia 2
 
-blosum = abre o dicionário correspondente a matriz Blosum62 na lib Bio
+Construtor:
+    Todos os parâmetros viram atributo do objeto, além dos atributos
+    * matrizDePontos    // cujas linhas representa a seq1 e as colunas, seq2
+    * mutações  = 0        // parte do algoritmo que não funciona
 
-pegaValor(i, j):
 
-    tenta:
-        valorBlosum = blosum[seq1[i], seq2[j]]
-    caso não tenha, inverte:
-        valorBlosum = blosum[seq2[j], seq1[i]]
-    
-    // Ou seja: caso não tenha, por exemplo, (L, M), tenta (M, L)
+Métodos:
 
-    valoresPossíveis = [
-        matrizAlinhamento[i-1][j-1] + valorBlosum,
-        matrizAlinhamento[i][j-1] + penalidadeGap,
-        matrizAlinhamento[i-1][j] + penalidadeGap
-    ]
+    alinha():
 
-    retorna (max(valoresPossíveis), Operação correspondente ao max)
+    Para cada i,j da matrizDePontos:
+        Se char i da seq1 == char j da seq2:
+            matrizDePontos[i][j] = 1
+        Se não:
+            matrizDePontos[i][j] = 0
+            mutações = mutações + 1
+            print caractere i e j mostrando que mutação ocorreu
+
+Abre sequência normal sn
+Abre sequência mutada sm
+
+alinhador = Alinhador(sn, sm)
+alinhador.alinha()
