@@ -1,4 +1,5 @@
 """
+
 @Title: Genetic Means
 @Author: Felipe Colombelli
 @Description: A genetic algorithm using k-means as classification model
@@ -29,12 +30,12 @@
     We will start our rationale from the following idea:
     Fitness = Accuracy - Number of genes
 
-    Because the number of genes is ranged from 0 to 7129, the number of genes would
+    Because the number of genes is ranged from 0 to 7128, the number of genes would
     take much more importance, so we normalize it mapping the values to range between
     0 and 100 using the following formula: 
 
-    100 * (number of genes - min) / (max - min), where min = 0, and max = 7129
-    100 * (number of genes) / 7129
+    100 * (number of genes - min) / (max - min), where min = 0, and max = 7128
+    100 * (number of genes) / 7128
 
     Now, Fitness = Accuracy - Normalized number of genes
 
@@ -63,3 +64,62 @@
     Fitness = Modified accuracy - Normalized number of genes
 
 """
+
+import pandas as pd
+import numpy as np
+
+
+class GeneticMeans():
+    
+    def __init__(df, populationSize=50, iterations=100, mutationRate=0.2, 
+                    elitism=0.15, roulette=0.1):
+
+        self.df = df
+        self.populationSize = populationSize
+        self.iterations = iterations
+        self.mutationRate = mutationRate
+        self.elitism = elitism
+        self.roulette = roulette
+
+
+    def genetic_algorithm(self)
+
+        self.__generatePopulation()
+        self.__computeFitness()
+
+
+        bestIdx = np.argmax(self.fitness)
+        bestIndividualPrev = self.population[bestIdx]
+        greaterScoreFound = np.amax(self.fitness)
+
+
+        generation = 1
+        while generation <= max_generations:
+
+            if (self.fitness[bestIdx] > greaterScoreFound):
+                greaterScoreFound = np.amax(self.fitness)
+                np.savetxt("best_genetic.txt", bestIndividualPrev)
+
+            self.__selectPopulation()
+            self.__crossPopulation()
+            self.__computeFitness()
+            generation += 1
+
+            bestIdx = np.argmax(self.fitness)
+            bestIndividual = self.population[bestIdx]
+            bestIndividualPrev = bestIndividual
+
+
+        print("Max generations reached. Learning algorithm stopped.")
+        return
+
+
+    def __printIterationStatus(self, generation, bestIdx, greaterScoreFound):
+        print("\n\nGeneration:", generation)
+        print("Best population score:", self.fitness[bestIdx])
+        print("Greater score found among generations:", greaterScoreFound)
+        print("Accuracy of the best individual:")
+        print("Number of genes of the best individual:")
+        print("\n\n")
+
+
