@@ -34,18 +34,6 @@ def select_test_set():
 
 
 
-if __name__ == "__main__":
-    
-    sequences, motif_lens = select_test_set() 
-    while not sequences:
-        sequences, motif_lens = select_test_set() 
-
-
-    for motif_len in motif_lens:
-        find_motifs(sequences, motif_len)
-
-
-
 def find_motifs(sequences, motif_len):
 
     matrices =  build_first_matrices(sequences[0], motif_len)
@@ -60,6 +48,9 @@ def build_first_matrices(sequence, motif_len):
     for i in range(num_matrices):
         l_mer = get_l_mer_by_iteration(sequence, motif_len, i)
         matrix = build_matrix([l_mer])
+        print("\n\n\n")
+        print(matrix)
+        print("\n\n\n")
         matrices.append(matrix)
     
     return matrices
@@ -67,7 +58,7 @@ def build_first_matrices(sequence, motif_len):
 
 
 def get_l_mer_by_iteration(sequence, motif_len, i):
-    start_idx = motif_len * i
+    start_idx = i
     end_idx = start_idx + motif_len
     return sequence[start_idx:end_idx]
 
@@ -86,10 +77,20 @@ def build_matrix(l_mers):
                 if l_mer[position] == base:
                     matches += 1
             row.append(matches)
+        matrix.append(row)
 
     return (l_mers, matrix)
              
 
 
+if __name__ == "__main__":
+    
+    sequences, motif_lens = select_test_set() 
+    while not sequences:
+        sequences, motif_lens = select_test_set() 
 
+
+    #for motif_len in motif_lens:
+    #    find_motifs(sequences, motif_len)
+    find_motifs(sequences, 3)
     
