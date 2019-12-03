@@ -1,3 +1,6 @@
+from copy import deepcopy
+from math import log2
+
 def select_test_set():
     test_set = input("Select (1 or 2) the test set...")
     sequences = False
@@ -37,6 +40,12 @@ def select_test_set():
 def find_motifs(sequences, motif_len):
 
     matrices =  build_first_matrices(sequences[0], motif_len)
+    for sequence in sequences[1:]:
+        matrices =  update_matrices(sequence, matrices, motif_len)
+
+    best_matrix = select_matrix(matrices)
+    return best_matrix
+        
 
 
 
@@ -48,9 +57,6 @@ def build_first_matrices(sequence, motif_len):
     for i in range(num_matrices):
         l_mer = get_l_mer_by_iteration(sequence, motif_len, i)
         matrix = build_matrix([l_mer])
-        print("\n\n\n")
-        print(matrix)
-        print("\n\n\n")
         matrices.append(matrix)
     
     return matrices
@@ -79,8 +85,79 @@ def build_matrix(l_mers):
             row.append(matches)
         matrix.append(row)
 
-    return (l_mers, matrix)
+    I = compute_I(matrix, l_mers)
+
+    return (l_mers, matrix, I)
              
+
+def compute_I(matrix, l_mers):
+    
+    num_sequences = len(l_mers)
+    pa = get_genomic_frequency(l_mers, 'a')
+    pc = get_genomic_frequency(l_mers, 'c')
+    pg = get_genomic_frequency(l_mers, 'g')
+    pt = get_genomic_frequency(l_mers, 't')
+    frequencies = [pa, pc, pg, pt]
+
+    I = 0
+
+    for idx, row in enumerate(matrix):
+        for col in row:
+            N_bi = col
+            if N_bi == 0:
+                continue
+
+            I += (N_bi / num_sequences) * \
+                log2((N_bi / num_sequences) / frequencies[idx])
+
+    return I
+
+
+def get_genomic_frequency(l_mers, base):
+
+    num_bases = len(l_mers) * len(l_mers[0])
+    base_occurrences = 0
+    for l_mer in l_mers:
+        base_occurrences += l_mer.count(base)
+    
+    return base_occurrences/num_bases
+
+
+
+def update_matrices(sequence, matrices, motif_len):
+
+    # For each matrix
+    num_matrices = len(matrices)
+    updated_matrices = []
+
+    for matrix in matrices:
+        current_matrices = []
+        
+        for i in range(num_matrices):
+            l_mers = deepcopy(matrix[0])
+            new_l_mer = get_l_mer_by_iteration(sequence, motif_len, i)
+            l_mers.append(new_l_mer)
+            matrix_temp = build_matrix(l_mers)
+            current_matrices.append(matrix_temp)
+        
+        best_matrix = select_matrix(current_matrices)
+        updated_matrices.append(best_matrix)
+    
+    return updated_matrices
+
+
+
+def select_matrix(matrices):
+
+    best_score = 0
+    best_matrix = []
+
+    for matrix in matrices:
+        if matrix[2] > best_score:
+            best_score = matrix[2]
+            best_matrix = matrix
+    
+    return best_matrix
 
 
 if __name__ == "__main__":
@@ -92,5 +169,6 @@ if __name__ == "__main__":
 
     #for motif_len in motif_lens:
     #    find_motifs(sequences, motif_len)
-    find_motifs(sequences, 3)
-    
+    best_matrix = find_motifs(sequences, 8)
+    print(best_matrix)
+
