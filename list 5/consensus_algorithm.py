@@ -2,7 +2,7 @@ from copy import deepcopy
 from math import log2
 
 def select_test_set():
-    test_set = input("Select (1 or 2) the test set...")
+    test_set = input("Select (1 or 2) the test set... ")
     sequences = False
     motif_lens = False
 
@@ -160,15 +160,36 @@ def select_matrix(matrices):
     return best_matrix
 
 
+def print_matrix(matrix):
+    print("Matrix:")
+    for row in matrix:
+        print(row)
+
+
+def print_patterns(patterns):
+    print("Patterns:")
+    for pattern in patterns:
+        print(pattern)
+
+
+
 if __name__ == "__main__":
     
     sequences, motif_lens = select_test_set() 
     while not sequences:
         sequences, motif_lens = select_test_set() 
 
+    print("\n\n#######################################\n")
+    for motif_len in motif_lens:
+        
+        matrix_tuple = find_motifs(sequences, motif_len)
+        print("\nMotif length considered:", motif_len)
+        print("\n")
+        print_patterns(matrix_tuple[0])
+        print("\n")
+        print_matrix(matrix_tuple[1])
+        print("\nI score:", matrix_tuple[2])
+        print("\n\n#######################################\n")
 
-    #for motif_len in motif_lens:
-    #    find_motifs(sequences, motif_len)
-    best_matrix = find_motifs(sequences, 8)
-    print(best_matrix)
+
 
