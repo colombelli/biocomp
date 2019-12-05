@@ -1,5 +1,7 @@
 from copy import deepcopy
 from math import log2
+import numpy as np
+
 
 def select_test_set():
     test_set = input("Select (1 or 2) the test set... ")
@@ -160,36 +162,70 @@ def select_matrix(matrices):
     return best_matrix
 
 
+
+def get_motif(matrix):
+
+    l_mer = len(matrix[0])
+    motif = []
+
+    for position in range(l_mer):
+        ocurrences = np.array([
+            matrix[0][position],
+            matrix[1][position],
+            matrix[2][position],
+            matrix[3][position]
+        ])
+        motif.append(np.argmax(ocurrences))
+
+    # Converting integer list to string list 
+    motif_string = [str(i) for i in motif] 
+      
+    # Join list items using join() 
+    motif_string = str("".join(motif_string)) 
+
+    # Replace indexes by their bases
+    return motif_string.replace("0", "a").replace("1", "c").replace("2", "g").replace("3", "t")
+
+
+
 def print_matrix(matrix):
     print("Matrix:")
     for row in matrix:
         print(row)
 
 
-def print_patterns(patterns):
-    print("Patterns:")
-    for pattern in patterns:
-        print(pattern)
+
+def print_patterns(patterns, motif):
+    print("Found in the sequences:")
+    for idx, pattern in enumerate(patterns):
+        print(idx+1, "-", pattern)
 
 
 
 if __name__ == "__main__":
-    
+
     sequences, motif_lens = select_test_set() 
     while not sequences:
         sequences, motif_lens = select_test_set() 
 
     print("\n\n#######################################\n")
+    
     for motif_len in motif_lens:
         
         matrix_tuple = find_motifs(sequences, motif_len)
-        print("\nMotif length considered:", motif_len)
-        print("\n")
-        print_patterns(matrix_tuple[0])
+        print("Motif length considered:", motif_len)
+        
         print("\n")
         print_matrix(matrix_tuple[1])
-        print("\nI score:", matrix_tuple[2])
-        print("\n\n#######################################\n")
+        print("I score:", matrix_tuple[2])
+
+        motif = get_motif(matrix_tuple[1])
+        print("\nMotif found:", motif)
+
+        print("")
+        print_patterns(matrix_tuple[0], motif)
+        
+        print("\n#######################################\n")
 
 
 
